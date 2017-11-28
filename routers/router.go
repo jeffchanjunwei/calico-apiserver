@@ -6,8 +6,13 @@ import (
 )
 
 func init() {
+<<<<<<< HEAD
         ns := beego.NewNamespace("/calico/v1",
 		beego.NSNamespace)"/ippool",
+=======
+        ns := beego.NewNamespace("/paas-net/v1",
+		beego.NSNamespace("/ippool",
+>>>>>>> dev-cjw
 			beego.NSInclude(
 				&controllers.IppoolController{},
 			),
