@@ -6,7 +6,9 @@ import (
 	"strings"
 
         "github.com/astaxie/beego"
+        "github.com/astaxie/beego/logs"
         "github.com/projectcalico/libcalico-go/lib/api"
+        "github.com/projectcalico/libcalico-go/lib/client"
 )
 
 // Operations about ippool
@@ -16,8 +18,13 @@ type IppoolController struct {
 
 var ippoolClient interface{}
 
-func Init() {
-	ippoolClient = calicoClient.IPPools()
+func init() {
+        calioClient, err := client.NewFromEnv()
+        if err != nil {
+                logs.Error("Error calico client initialization.")
+        }
+	
+        ippoolClient = calioClient.IPPools()
 }
 
 // @Title List ippools.
@@ -29,7 +36,7 @@ func Init() {
 func (c *IppoolController) List() {
         logs.Info("Invoke Calico-apiserver Ippool List Api. Request Header: ", c.Ctx.Request.Header)
 
-        result, err := ippoolCLient.List(api.IPPoolMetadata)
+        result, err := ippoolClient.List(api.IPPoolMetadata{})
 	if err == nil {
 		writeResponse(c, http.StatusOK, result)
 	} else {
@@ -47,14 +54,9 @@ func (c *IppoolController) List() {
 func (c *IppoolController) Get() {
 	logs.Info("Invoke Calico-apiserver Ippool Get Api. Request Header: ", c.Ctx.Request.Header)
 	ippoolStringName := c.GetString (":ippool")
- 	ippoolCidrName := net.IPNet{
-		IP: []byte(strings.Split(ippoolStringName, "/")[0])
-		Mask: []byte(strings.Split(ippoolStringName, "/")[1])
-	}
+ 	ippoolCidrName := net.IPNet{ net.IP{[]byte(strings.Split(ippoolStringName, "/")[0])}, net.IPMask {[]byte((strings.Split(ippoolStringName, "/"))[1])}}
 
-	result, err := ippoolClient.Get(api.IPPoolMetadata{
-		CIDR: ippoolCidrName
-	})
+	result, err := ippoolClient.Get(api.IPPoolMetadata{ippoolCidrName})
 	if err == nil {
                 writeResponse(c, http.StatusOK, result)
         } else {
@@ -98,27 +100,27 @@ func (c *IppoolController) Update() {
 	logs.Info("Invoke Calico-apiserver Ippool Update Api. Request Header: ", c.Ctx.Request.Header)	
 
 	ippoolStringName := c.GetString (":ippool")
-        ippoolCidrName := net.IPNet{
-                IP: []byte(strings.Split(ippoolStringName, "/")[0])
-                Mask: []byte(strings.Split(ippoolStringName, "/")[1])
-        }
+        //ippoolCidrName := net.IPNet{
+        //        IP: []byte(strings.Split(ippoolStringName, "/")[0])
+        //        Mask: []byte(strings.Split(ippoolStringName, "/")[1])
+        //}
+        ippoolCidrName := net.IPNet{ net.IP{[]byte(strings.Split(ippoolStringName, "/")[0])}, net.IPMask {[]byte((strings.Split(ippoolStringName, "/"))[1])}}
 
-        result, err := ippoolClient.Get(api.IPPoolMetadata{
-                CIDR: ippoolCidrName
-        })
+        result, err := ippoolClient.Get(api.IPPoolMetadata{ippoolCidrName})
+
         if result == nil {
 		writeErrResponse(c, http.StatusBadRequest, errors.New("Error when update ippool. Ippool does not exists"))
 	}
 
 	var req api.IPPool
-        err := BodyToObject(c.Ctx.Request, &req)
+        err = BodyToObject(c.Ctx.Request, &req)
         if err != nil {
                 glog.Errorf("Failed to unmarshall reques: %v", err)
                 writeErrResponse(c, http.StatusBadRequest, err)
                 return
         }
 
-        result, err := ippoolClient.Update(req)
+        result, err = ippoolClient.Update(req)
         if err == nil {
                 writeResponse(c, http.StatusOK, result)
         } else {
@@ -163,14 +165,13 @@ func (c *IppoolController) Apply() {
 func (c *IppoolController) Delete() {
 	logs.Info("Invoke Calico-apiserver Ippool Get Api. Request Header: ", c.Ctx.Request.Header)
         ippoolStringName := c.GetString (":ippool")
-        ippoolCidrName := net.IPNet{
-                IP: []byte(strings.Split(ippoolStringName, "/")[0])
-                Mask: []byte(strings.Split(ippoolStringName, "/")[1])
-        }
+        //ippoolCidrName := net.IPNet{
+        //        IP: []byte(strings.Split(ippoolStringName, "/")[0])
+        //        Mask: []byte(strings.Split(ippoolStringName, "/")[1])
+        //}
+	ippoolCidrName := net.IPNet{ net.IP{[]byte(strings.Split(ippoolStringName, "/")[0])}, net.IPMask {[]byte((strings.Split(ippoolStringName, "/"))[1])}}
 
-        result, err := ippoolClient.Delete(api.IPPoolMetadata{
-                CIDR: ippoolCidrName
-        })
+        result, err := ippoolClient.Delete(api.IPPoolMetadata{ippoolCidrName})
         if err == nil {
                 writeResponse(c, http.StatusOK, result)
         } else {
