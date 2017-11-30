@@ -4,6 +4,8 @@ MAINTAINER jeffchanjunwei@163.com
 
 COPY ./calico-apiserver  /
 
+RUN ["mkdir","/calico-secrets"]
+
 ENV FELIX_IPV6SUPPORT false
 ENV KUBERNETES_SERVICE_PORT 443
 ENV KUBERNETES_PORT tcp://10.233.0.1:443
@@ -46,4 +48,4 @@ ENV ETCD_KEY_FILE /calico-secrets/etcd-key
 ENV KUBEDNS_PORT udp://10.233.0.3:53
 ENV KUBEDNS_SERVICE_PORT 53
 
-CMD ['/calico-apiserver']
+CMD ["/calico-apiserver"]
