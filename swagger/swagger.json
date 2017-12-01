@@ -1,0 +1,153 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "basePath": "/paas-net/v1",
+    "paths": {
+        "/ippool/": {
+            "get": {
+                "tags": [
+                    "ippool"
+                ],
+                "description": "List ippools.",
+                "operationId": "IppoolController.List ippools.",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/.IppoolList"
+                        }
+                    },
+                    "400": {
+                        "description": "{object} error"
+                    },
+                    "500": {
+                        "description": "{object} error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ippool"
+                ],
+                "description": "create  ippool.",
+                "operationId": "IppoolController.create ippool.",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/.ippool"
+                        }
+                    },
+                    "400": {
+                        "description": "{object} error"
+                    },
+                    "500": {
+                        "description": "{object} error"
+                    }
+                }
+            }
+        },
+        "/ippool/{ippool}": {
+            "get": {
+                "tags": [
+                    "ippool"
+                ],
+                "description": "Get specific ippool.",
+                "operationId": "IppoolController.Get specific ippool.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ippool",
+                        "description": "ippool",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/.Ippool"
+                        }
+                    },
+                    "400": {
+                        "description": "{object} error"
+                    },
+                    "500": {
+                        "description": "{object} error"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "ippool"
+                ],
+                "description": "apply updates an IP pool if it exists, or create a new pool if it does not exists.",
+                "operationId": "IppoolController.apply ippool.",
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/.ippool"
+                        }
+                    },
+                    "400": {
+                        "description": "{object} error"
+                    },
+                    "500": {
+                        "description": "{object} error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ippool"
+                ],
+                "description": "delete specific ippool.",
+                "operationId": "IppoolController.delete specific ippool.",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "ippool",
+                        "description": "ippool",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/.ippool"
+                        }
+                    },
+                    "400": {
+                        "description": "{object} error"
+                    },
+                    "500": {
+                        "description": "{object} error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        ".Ippool": {
+            "type": "object"
+        },
+        ".IppoolList": {
+            "type": "object"
+        },
+        ".ippool": {
+            "type": "object"
+        }
+    },
+    "tags": [
+        {
+            "name": "ippool",
+            "description": "Operations about ippool\n"
+        }
+    ]
+}
