@@ -3,11 +3,9 @@ package controllers
 import (
 	"net/http"
 	"strings"
-	"net"
 	"log"
 
         "github.com/astaxie/beego"
-        //"github.com/astaxie/beego/logs"
         "github.com/projectcalico/libcalico-go/lib/api"
         "github.com/projectcalico/libcalico-go/lib/client"
         libnet "github.com/projectcalico/libcalico-go/lib/net"
@@ -108,7 +106,7 @@ func (c *IppoolController) Update() {
         ippoolStringName = strings.Replace(ippoolStringName, "-", "/", 1)	
 
 	_, ippoolCidrName, _ := libnet.ParseCIDR(ippoolStringName)
-        result, err := ippoolClient.Get(api.IPPoolMetadata{CIDR: ippoolCidrName})
+        result, err := ippoolClient.Get(api.IPPoolMetadata{CIDR: *ippoolCidrName})
         if err != nil {
 		writeErrResponse(c, http.StatusBadRequest, err)
 	}
@@ -135,7 +133,7 @@ func (c *IppoolController) Update() {
 // @Success 200 {object} ippool
 // @Failure 400 {object} error
 // @Failure 500 {object} error
-// @router /:ippool [put]
+// @router / [put]
 func (c *IppoolController) Apply() {
 	log.Println("Invoke Calico-apiserver Ippool Apply Api. Request Header: ", c.Ctx.Request.Header)
 
@@ -165,12 +163,13 @@ func (c *IppoolController) Apply() {
 // @router /:ippool [delete]
 func (c *IppoolController) Delete() {
 	log.Println("Invoke Calico-apiserver Ippool Get Api. Request Header: ", c.Ctx.Request.Header)
-        ippoolStringName := c.GetString (":ippool")
-	ippoolCidrName := libnet.IPNet{ net.IPNet{IP: []byte((strings.Split(ippoolStringName, "-"))[0]), Mask: []byte((strings.Split(ippoolStringName, "-"))[1])}}
+	ippoolStringName := c.GetString (":ippool")
+        ippoolStringName = strings.Replace(ippoolStringName, "-", "/", 1)
 
-        result, err := ippoolClient.Get(api.IPPoolMetadata{CIDR: ippoolCidrName})
+        _, ippoolCidrName, _ := libnet.ParseCIDR(ippoolStringName)
+        err := ippoolClient.Delete(api.IPPoolMetadata{CIDR: *ippoolCidrName})
         if err == nil {
-                writeResponse(c, http.StatusOK, result)
+                writeResponse(c, http.StatusOK, *ippoolCidrName)
         } else {
                 writeErrResponse(c, http.StatusBadRequest, err)
         }
