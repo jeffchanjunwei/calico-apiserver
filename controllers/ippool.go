@@ -131,7 +131,7 @@ func (c *IppoolController) Update() {
 // @Success 200 {object} ippool
 // @Failure 400 {object} error
 // @Failure 500 {object} error
-// @router /:ippool [put]
+// @router / [put]
 func (c *IppoolController) Apply() {
 	log.Println("Invoke Calico-apiserver Ippool Apply Api. Request Header: ", c.Ctx.Request.Header)
 
