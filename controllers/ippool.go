@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"strings"
 	"net"
+	"log"
 
         "github.com/astaxie/beego"
-        "github.com/astaxie/beego/logs"
+        //"github.com/astaxie/beego/logs"
         "github.com/projectcalico/libcalico-go/lib/api"
         "github.com/projectcalico/libcalico-go/lib/client"
         libnet "github.com/projectcalico/libcalico-go/lib/net"
@@ -22,7 +23,7 @@ var ippoolClient client.IPPoolInterface
 func init() {
         calioClient, err := client.NewFromEnv()
         if err != nil {
-                logs.Error("Error calico client initialization.")
+                log.Println("Error calico client initialization.")
         }
 	
         ippoolClient = calioClient.IPPools()
@@ -35,7 +36,7 @@ func init() {
 // @Failure 500 {object} error
 // @router / [get]
 func (c *IppoolController) List() {
-        logs.Info("Invoke Calico-apiserver Ippool List Api. Request Header: ", c.Ctx.Request.Header)
+        log.Println("Invoke Calico-apiserver Ippool List Api. Request Header: ", c.Ctx.Request.Header)
 
         result, err := ippoolClient.List(api.IPPoolMetadata{})
 
@@ -54,12 +55,13 @@ func (c *IppoolController) List() {
 // @Failure 500 {object} error
 // @router /:ippool [get]
 func (c *IppoolController) Get() {
-	logs.Info("Invoke Calico-apiserver Ippool Get Api. Request Header: ", c.Ctx.Request.Header)
+	log.Println("Invoke Calico-apiserver Ippool Get Api. Request Header: ", c.Ctx.Request.Header)
+	
 	ippoolStringName := c.GetString (":ippool")
+        ippoolStringName = strings.Replace(ippoolStringName, "-", "/", 1)
 
- 	ippoolCidrName := libnet.IPNet{ net.IPNet{IP: []byte((strings.Split(ippoolStringName, "/"))[0]), Mask: []byte((strings.Split(ippoolStringName, "/"))[1])}}
-
-	result, err := ippoolClient.Get(api.IPPoolMetadata{CIDR: ippoolCidrName})
+        _, ippoolCidrName, _ := libnet.ParseCIDR(ippoolStringName)
+        result, err := ippoolClient.Get(api.IPPoolMetadata{CIDR: *ippoolCidrName})
 	if err == nil {
                 writeResponse(c, http.StatusOK, result)
         } else {
@@ -74,13 +76,12 @@ func (c *IppoolController) Get() {
 // @Failure 500 {object} error
 // @router / [put]
 func (c *IppoolController) Create() {
-	logs.Info("Invoke Calico-apiserver Ippool Create Api. Request Header: ", c.Ctx.Request.Header)
+	log.Println("Invoke Calico-apiserver Ippool Create Api. Request Header: ", c.Ctx.Request.Header)
 	
 	var req api.IPPool
 	err := BodyToObject(c.Ctx.Request, &req) 
 	if err != nil {
-		logs.Error("Failed to unmarshall reques: %v", err)
-
+		log.Printf("Failed to unmarshall reques: %v", err)
 		writeErrResponse(c, http.StatusBadRequest, err)
 		return
 	}
@@ -101,20 +102,21 @@ func (c *IppoolController) Create() {
 // @Failure 500 {object} error
 // @router /:ippool [put]
 func (c *IppoolController) Update() {
-	logs.Info("Invoke Calico-apiserver Ippool Update Api. Request Header: ", c.Ctx.Request.Header)	
+	log.Println("Invoke Calico-apiserver Ippool Update Api. Request Header: ", c.Ctx.Request.Header)	
 
 	ippoolStringName := c.GetString (":ippool")
-	ippoolCidrName := libnet.IPNet{ net.IPNet{IP: []byte((strings.Split(ippoolStringName, "/"))[0]), Mask: []byte((strings.Split(ippoolStringName, "/"))[1])}}
+        ippoolStringName = strings.Replace(ippoolStringName, "-", "/", 1)	
 
+	_, ippoolCidrName, _ := libnet.ParseCIDR(ippoolStringName)
         result, err := ippoolClient.Get(api.IPPoolMetadata{CIDR: ippoolCidrName})
-        if result == nil {
+        if err != nil {
 		writeErrResponse(c, http.StatusBadRequest, err)
 	}
 
 	var req api.IPPool
         err = BodyToObject(c.Ctx.Request, &req)
         if err != nil {
-                logs.Error("Failed to unmarshall reques: %v", err)
+                log.Printf("Failed to unmarshall reques: %v", err)
                 writeErrResponse(c, http.StatusBadRequest, err)
                 return
         }
@@ -135,12 +137,12 @@ func (c *IppoolController) Update() {
 // @Failure 500 {object} error
 // @router /:ippool [put]
 func (c *IppoolController) Apply() {
-	logs.Info("Invoke Calico-apiserver Ippool Apply Api. Request Header: ", c.Ctx.Request.Header)
+	log.Println("Invoke Calico-apiserver Ippool Apply Api. Request Header: ", c.Ctx.Request.Header)
 
         var req api.IPPool
         err := BodyToObject(c.Ctx.Request, &req)
         if err != nil {
-                logs.Error("Failed to unmarshall reques: %v", err)
+                log.Printf("Failed to unmarshall reques: %v", err)
                 writeErrResponse(c, http.StatusBadRequest, err)
                 return
         }
@@ -162,9 +164,9 @@ func (c *IppoolController) Apply() {
 // @Failure 500 {object} error
 // @router /:ippool [delete]
 func (c *IppoolController) Delete() {
-	logs.Info("Invoke Calico-apiserver Ippool Get Api. Request Header: ", c.Ctx.Request.Header)
+	log.Println("Invoke Calico-apiserver Ippool Get Api. Request Header: ", c.Ctx.Request.Header)
         ippoolStringName := c.GetString (":ippool")
-	ippoolCidrName := libnet.IPNet{ net.IPNet{IP: []byte((strings.Split(ippoolStringName, "/"))[0]), Mask: []byte((strings.Split(ippoolStringName, "/"))[1])}}
+	ippoolCidrName := libnet.IPNet{ net.IPNet{IP: []byte((strings.Split(ippoolStringName, "-"))[0]), Mask: []byte((strings.Split(ippoolStringName, "-"))[1])}}
 
         result, err := ippoolClient.Get(api.IPPoolMetadata{CIDR: ippoolCidrName})
         if err == nil {

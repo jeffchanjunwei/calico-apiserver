@@ -1,11 +1,18 @@
-FROM golang:1.9
+FROM golang:1.9-alpine
 
 MAINTAINER jeffchanjunwei@163.com
 
-COPY ./calico-apiserver  /
+RUN mkdir -p /go/src/github.com/jeffchanjunwei/calico-apiserver/ && \
+    mkdir /calico-secrets
 
-RUN ["mkdir","/calico-secrets"]
+COPY . /go/src/github.com/jeffchanjunwei/calico-apiserver/
+WORKDIR /go/src/github.com/jeffchanjunwei/calico-apiserver/
 
+RUN cp -r /go/src/github.com/jeffchanjunwei/calico-apiserver/vendor/* /go/src/ && \
+    go install github.com/beego/bee && \
+    chmod 755 /go/src/github.com/jeffchanjunwei/calico-apiserver/run.sh
+
+ENV PATH /usr/local/go/bin:/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV FELIX_IPV6SUPPORT false
 ENV KUBERNETES_SERVICE_PORT 443
 ENV KUBERNETES_PORT tcp://10.233.0.1:443
@@ -28,7 +35,6 @@ ENV FELIX_DEFAULTENDPOINTTOHOSTACTION ACCEPT
 ENV KUBERNETES_PORT_443_TCP_ADDR 10.233.0.1
 ENV KUBEDNS_PORT_53_UDP udp://10.233.0.3:53
 ENV ETCD_CA_CERT_FILE /calico-secrets/etcd-ca
-ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV KUBERNETES_PORT_443_TCP_PORT 443
 ENV KUBERNETES_PORT_443_TCP_PROTO tcp
 ENV FELIX_HEALTHENABLED true
@@ -48,4 +54,6 @@ ENV ETCD_KEY_FILE /calico-secrets/etcd-key
 ENV KUBEDNS_PORT udp://10.233.0.3:53
 ENV KUBEDNS_SERVICE_PORT 53
 
-CMD ["/calico-apiserver"]
+EXPOSE 9077
+
+ENTRYPOINT ["/go/src/github.com/jeffchanjunwei/calico-apiserver/run.sh"]

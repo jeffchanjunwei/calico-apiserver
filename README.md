@@ -8,5 +8,7 @@ calico-apiserver is a self-developed module which invoke the interfaces of calic
 
 # Installation instructions:
 - docker container  
+  docker build . -t jeffchanjunwei/calico-apiserver
 - local compile
+  bee run -gendoc=true -downdoc=false
 
