@@ -18,14 +18,14 @@ type IppoolController struct {
 
 var ippoolClient client.IPPoolInterface
 
-func init() {
-        calioClient, err := client.NewFromEnv()
-        if err != nil {
-                log.Println("Error calico client initialization.")
-        }
-	
-        ippoolClient = calioClient.IPPools()
-}
+//func init() {
+//        calioClient, err := client.NewFromEnv()
+//        if err != nil {
+//                log.Println("Error calico client initialization.")
+//        }
+//	
+//        ippoolClient = calioClient.IPPools()
+//}
 
 // @Title List ippools.
 // @Description List ippools.

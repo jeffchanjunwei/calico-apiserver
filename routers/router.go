@@ -12,6 +12,12 @@ func init() {
 				&controllers.IppoolController{},
 			),
 		),
+
+	        beego.NSNamespace("/workloadendpoint",
+			beego.NSInclude(
+				&controllers.WorkloadendpointController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 
