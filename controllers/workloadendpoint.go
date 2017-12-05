@@ -15,9 +15,9 @@ type WorkloadendpointController struct {
 
 var workloadendpointClient client.WorkloadEndpointInterface
 
-func init() {
-	workloadendpointClient = calioClient.WorkloadEndpoints()
-}
+//func init() {
+//	workloadendpointClient = calicoClient.WorkloadEndpoints()
+//}
 
 // @Title List workloadendpoints.
 // @Description List workloadendpoints.

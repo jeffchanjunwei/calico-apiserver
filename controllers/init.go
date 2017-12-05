@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"github.com/projectcalico/libcalico-go/lib/client"
 )
 
@@ -11,5 +12,5 @@ func init() {
 	}
 
 	ippoolClient = calicoClient.IPPools()
-	workloadendpointClient = calioClient.WorkloadEndpoints()
+	workloadendpointClient = calicoClient.WorkloadEndpoints()
 }
