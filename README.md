@@ -2,7 +2,7 @@
 calico-apiserver is a self-developed module which invoke the interfaces of calico and supply Restful apis. Now it can be used to edit the calico ippool and workloadendpoint resources. 
 
 # Functional structure
-<img src="https://github.com/jeffchanjunwei/calico-apiserver/raw/master/paas-net.png" width = "50" height = "50" alt="paas-net structure" align=center />
+<img src="https://github.com/jeffchanjunwei/calico-apiserver/raw/master/paas-net.png" width = "500" height = "500" alt="paas-net structure" align=center />
 
 # Version of dependent packages
 + libcalico-go:1.7.1
