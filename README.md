@@ -3,9 +3,10 @@ calico-apiserver is a self-developed module which invoke the interfaces of calic
 
 # Functional structure
 <img src="https://github.com/jeffchanjunwei/calico-apiserver/raw/master/paas-net.png" width = "500" height = "300" alt="paas-net structure" align=center />
-+ components 
-[calico-apiserver](https://github.com/jeffchanjunwei/calico-apiserver)
-[pool-monitor](https://github.com/jeffchanjunwei/pool-monitor)
+
+
++ [calico-apiserver](https://github.com/jeffchanjunwei/calico-apiserver)
++ [pool-monitor](https://github.com/jeffchanjunwei/pool-monitor)
 
 
 # Version of dependent packages
